@@ -8,7 +8,7 @@ module Rack
       @options = options
       @options[:min_percent] ||= 1
       @tmpdir = options[:path] || Dir.tmpdir
-      @printer_klasses = @options[:printers]  || {::RubyProf::FlatPrinter => 'flat.txt',
+      @printer_klasses = @options[:printers]  || {::RubyProf::FlatPrinterWithLineNumbers  => 'flat.txt',
                                                   ::RubyProf::GraphPrinter => 'graph.txt',
                                                   ::RubyProf::GraphHtmlPrinter => 'graph.html',
                                                   ::RubyProf::CallStackPrinter => 'call_stack.html'}
@@ -38,10 +38,11 @@ module Rack
     def print(data, path)
       @printer_klasses.each do |printer_klass, base_name|
         printer = printer_klass.new(data)
-        file_name = ::File.join(@tmpdir, "#{path}-#{base_name}")
-        ::File.open(file_name, 'wb') do |file|
-          printer.print(file, @options)
-        end
+         printer.print(STDOUT, @options)
+        # file_name = ::File.join(@tmpdir, "#{path}-#{base_name}")
+        # ::File.open(file_name, 'wb') do |file|
+        #   printer.print(file, @options)
+        # end
       end
     end
   end
